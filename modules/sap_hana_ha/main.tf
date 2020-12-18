@@ -190,7 +190,7 @@ resource "google_compute_instance" "primary" {
   boot_disk {
     auto_delete = var.autodelete_disk
     source      = google_compute_disk.gcp_sap_hana_boot_primary.self_link
-    device_name = "${var.instance_name}-boot"
+    device_name = "${var.primary_instance_name}-boot"
   }
 
   attached_disk {
@@ -261,7 +261,7 @@ resource "google_compute_instance" "secondary" {
   boot_disk {
     auto_delete = var.autodelete_disk
     source      = google_compute_disk.gcp_sap_hana_boot_secondary.self_link
-    device_name = "${var.instance_name}-boot"
+    device_name = "${var.secondary_instance_name}-boot"
   }
 
   attached_disk {
