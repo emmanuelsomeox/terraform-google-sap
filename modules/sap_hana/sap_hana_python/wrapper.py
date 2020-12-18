@@ -61,7 +61,6 @@ if __name__ == '__main__':
     context = Context(query_dict['instance_type'])
 
     resources = sap_hana.GenerateConfig(context)['resources']
-    # resources = GenerateConfig(context)['resources']
 
     diskSSD = next((sub for sub in resources if sub['name'] == '-pdssd'))
     diskHDD = next((sub for sub in resources if sub['name'] == '-backup'))
