@@ -29,11 +29,12 @@ data "google_compute_image" "instance_image" {
   project = var.linux_image_project
 }
 
+# Primary boot disk
 resource "google_compute_disk" "gcp_sap_hana_boot_primary" {
   project = var.project_id
   name    = "${var.primary_instance_name}-boot"
   type    = var.boot_disk_type
-  zone    = var.zone
+  zone    = var.primary_zone
   size    = var.boot_disk_size
   image   = data.google_compute_image.instance_image.self_link
 
@@ -46,11 +47,12 @@ resource "google_compute_disk" "gcp_sap_hana_boot_primary" {
   }
 }
 
+# Secondary boot disk
 resource "google_compute_disk" "gcp_sap_hana_boot_secondary" {
   project = var.project_id
   name    = "${var.secondary_instance_name}-boot"
   type    = var.boot_disk_type
-  zone    = var.zone
+  zone    = var.secondary_zone
   size    = var.boot_disk_size
   image   = data.google_compute_image.instance_image.self_link
 
