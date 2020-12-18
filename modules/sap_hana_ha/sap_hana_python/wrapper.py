@@ -12,9 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sap_hana
 import sys
+import json
+import os 
 
+url = "https://storage.googleapis.com/sapdeploy/dm-templates/sap_hana/sap_hana.py"
+dir_path = os.path.dirname(os.path.realpath(__file__))
+major_version = sys.version_info.major
+if major_version == 2:
+    import urllib2
+    a = urllib2.urlopen(url)  
+elif major_version == 3:
+    import urllib.request
+    a = urllib.request.urlopen(url)    
+
+f = open(os.path.join(dir_path,"sap_hana.py"), "wb") 
+f.write(a.read())
+f.close
+
+import sap_hana
 
 class Context:
     def __init__(self, instance_type):
@@ -35,13 +51,21 @@ class Context:
 
 
 if __name__ == '__main__':
-    instance_type = sys.argv[1]
+    input_json = sys.stdin.read()
 
-    context = Context(instance_type)
+    try:
+        query_dict = json.loads(input_json)
+    except ValueError as value_error:
+        sys.exit(value_error)
+
+    context = Context(query_dict['instance_type'])
 
     resources = sap_hana.GenerateConfig(context)['resources']
 
     diskSSD = next((sub for sub in resources if sub['name'] == '-pdssd'))
     diskHDD = next((sub for sub in resources if sub['name'] == '-backup'))
-    print(diskSSD['properties']['sizeGb'])
-    print(diskHDD['properties']['sizeGb'])
+    output_disks = {}
+    output_disks["diskSSD"] = str(diskSSD['properties']['sizeGb'])
+    output_disks["diskHDD"] = str(diskHDD['properties']['sizeGb'])
+
+    sys.stdout.write(json.dumps(output_disks))

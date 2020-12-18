@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-# data "http" "sap-hana-py" {
-#   url = "https://storage.googleapis.com/sapdeploy/dm-templates/sap_hana/sap_hana.py"
-# }
-
 data "external" "sap_hana_disks" {
   program = ["python", "${path.module}/wrapper.py"]
 
   query = {
     instance_type = var.instance-type
   }
-
-  # depends_on = [data.http.sap-hana-py]
 }
