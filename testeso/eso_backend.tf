@@ -18,6 +18,6 @@ terraform {
   backend "gcs" {
     bucket = "test-tf-eso49"
     prefix = "state/vmslab49eso"
-    credentials = "credentials.json"
+    # credentials = "credentials.json"
   }
 }
