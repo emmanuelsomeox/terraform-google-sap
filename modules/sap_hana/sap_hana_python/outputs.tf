@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 output "diskSizeSSD" {
-  value = trimspace(split("\n", data.local_file.test.content)[0])
+  value = data.external.sap_hana_disks.result.diskSSD
 }
 output "diskSizeHDD" {
-  value = trimspace(split("\n", data.local_file.test.content)[1])
+  value = data.external.sap_hana_disks.result.diskHDD
 }

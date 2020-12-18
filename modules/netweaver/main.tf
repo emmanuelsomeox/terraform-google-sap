@@ -24,6 +24,30 @@ locals {
   device_name_3 = "${var.instance_name}-${var.device_3}"
 }
 
+# Get image
+data "google_compute_image" "instance_image" {
+  family  = var.linux_image_family
+  project = var.linux_image_project
+}
+
+resource "google_compute_disk" "gcp_nw_boot" {
+  project = var.project_id
+  name    = "${var.instance_name}-boot"
+  type    = var.boot_disk_type
+  zone    = var.zone
+  size    = var.boot_disk_size
+  image   = data.google_compute_image.instance_image.self_link
+  labels  = var.labels
+
+  # Add the disk_encryption_key block only if a pd_kms_key was provided
+  dynamic "disk_encryption_key" {
+    for_each = var.pd_kms_key != null ? [""] : []
+    content {
+      kms_key_self_link = var.pd_kms_key
+    }
+  }
+}
+
 resource "google_compute_disk" "gcp_nw_pd_0" {
   project = var.project_id
   name    = "${var.instance_name}-nw-0"
@@ -124,22 +148,15 @@ resource "google_compute_instance" "gcp_nw" {
   }
 
   boot_disk {
-    auto_delete       = var.autodelete_disk
-    kms_key_self_link = var.pd_kms_key
-
-    device_name = "${var.instance_name}-${var.device_0}"
-
-    initialize_params {
-      image = "projects/${var.linux_image_project}/global/images/family/${var.linux_image_family}"
-      size  = var.boot_disk_size
-      type  = var.boot_disk_type
-    }
+    auto_delete = var.autodelete_disk
+    source      = google_compute_disk.gcp_nw_boot.self_link
+    device_name = "${var.instance_name}-boot"
   }
 
   network_interface {
     subnetwork         = var.subnetwork
-    subnetwork_project = var.project_id
-    network_ip         = google_compute_address.sap_internal_ip.self_link
+    subnetwork_project = length(regexall("/", var.subnetwork)) > 0 ? null : var.project_id
+    network_ip         = google_compute_address.sap_internal_ip.address
 
     dynamic "access_config" {
       for_each = var.public_ip == 1 ? ["external_ip"] : []
@@ -166,7 +183,7 @@ resource "google_compute_instance" "gcp_nw" {
 
   lifecycle {
     # Ignore changes in the instance metadata, since it is modified by the SAP startup script.
-    ignore_changes = [metadata]
+    ignore_changes = [metadata, attached_disk]
   }
 
   service_account {

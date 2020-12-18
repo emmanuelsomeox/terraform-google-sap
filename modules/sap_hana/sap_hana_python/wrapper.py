@@ -12,9 +12,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sap_hana
 import sys
 
+
+# class Context:
+#     def __init__(self, instance_type):
+#         self.properties = {
+#             "zone": "",
+#             "subnetwork": "",
+#             "publicIP": "",
+#             "instanceName": "",
+#             "instanceType": instance_type,
+#             "linuxImage": "",
+#             "linuxImageProject": "",
+#             "sap_hana_scaleout_nodes": 0,
+#         }
+#         self.env = {
+#             "project": "",
+#             "project_number": "",
+#         }
+
+
+# if __name__ == '__main__':
+#     instance_type = sys.argv[1]
+
+#     context = Context(instance_type)
+
+#     resources = sap_hana.GenerateConfig(context)['resources']
+
+#     diskSSD = next((sub for sub in resources if sub['name'] == '-pdssd'))
+#     diskHDD = next((sub for sub in resources if sub['name'] == '-backup'))
+#     print(diskSSD['properties']['sizeGb'])
+#     print(diskHDD['properties']['sizeGb'])
+
+import json
+
+# url = "https://storage.googleapis.com/sapdeploy/dm-templates/sap_hana/sap_hana.py"
+# import urllib.request
+# import os 
+# dir_path = os.path.dirname(os.path.realpath(__file__))
+# a = urllib.request.urlopen(url)
+# f = open(os.path.join(dir_path,"sap_hana.py"), "wb") 
+# f.write(a.read())
+# f.close
+import sap_hana
 
 class Context:
     def __init__(self, instance_type):
@@ -35,13 +76,22 @@ class Context:
 
 
 if __name__ == '__main__':
-    instance_type = sys.argv[1]
+    input_json = sys.stdin.read()
 
-    context = Context(instance_type)
+    try:
+        query_dict = json.loads(input_json)
+    except ValueError as value_error:
+        sys.exit(value_error)
+
+    context = Context(query_dict['instance_type'])
 
     resources = sap_hana.GenerateConfig(context)['resources']
+    # resources = GenerateConfig(context)['resources']
 
     diskSSD = next((sub for sub in resources if sub['name'] == '-pdssd'))
     diskHDD = next((sub for sub in resources if sub['name'] == '-backup'))
-    print(diskSSD['properties']['sizeGb'])
-    print(diskHDD['properties']['sizeGb'])
+    output_disks = {}
+    output_disks["diskSSD"] = str(diskSSD['properties']['sizeGb'])
+    output_disks["diskHDD"] = str(diskHDD['properties']['sizeGb'])
+
+    sys.stdout.write(json.dumps(output_disks))
