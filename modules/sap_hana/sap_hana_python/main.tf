@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-data "http" "sap-hana-py" {
-  url = "https://storage.googleapis.com/sapdeploy/dm-templates/sap_hana/sap_hana.py"
-}
-
-# resource "local_file" "sap-hana-py" {
-#   filename = "${path.module}/sap_hana.py"
-
-#   content = data.http.sap-hana-py.body
+# data "http" "sap-hana-py" {
+#   url = "https://storage.googleapis.com/sapdeploy/dm-templates/sap_hana/sap_hana.py"
 # }
 
 data "external" "sap_hana_disks" {
@@ -29,9 +23,7 @@ data "external" "sap_hana_disks" {
 
   query = {
     instance_type = var.instance-type
-    # dummy = local_file.sap-hana-py.filename
   }
 
-  # depends_on = [local_file.sap-hana-py]
-  depends_on = [data.http.sap-hana-py]
+  # depends_on = [data.http.sap-hana-py]
 }
