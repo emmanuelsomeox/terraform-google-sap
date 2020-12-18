@@ -18,11 +18,11 @@ data "http" "sap-hana-py" {
   url = "https://storage.googleapis.com/sapdeploy/dm-templates/sap_hana/sap_hana.py"
 }
 
-resource "local_file" "sap-hana-py" {
-  filename = "${path.module}/sap_hana.py"
+# resource "local_file" "sap-hana-py" {
+#   filename = "${path.module}/sap_hana.py"
 
-  content = data.http.sap-hana-py.body
-}
+#   content = data.http.sap-hana-py.body
+# }
 
 data "external" "sap_hana_disks" {
   program = ["python", "${path.module}/wrapper.py"]
@@ -32,6 +32,6 @@ data "external" "sap_hana_disks" {
     dummy = local_file.sap-hana-py.filename
   }
 
-  depends_on = [local_file.sap-hana-py]
-  # depends_on = [data.http.sap-hana-py]
+  # depends_on = [local_file.sap-hana-py]
+  depends_on = [data.http.sap-hana-py]
 }

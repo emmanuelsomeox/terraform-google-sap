@@ -13,48 +13,23 @@
 # limitations under the License.
 
 import sys
-
-
-# class Context:
-#     def __init__(self, instance_type):
-#         self.properties = {
-#             "zone": "",
-#             "subnetwork": "",
-#             "publicIP": "",
-#             "instanceName": "",
-#             "instanceType": instance_type,
-#             "linuxImage": "",
-#             "linuxImageProject": "",
-#             "sap_hana_scaleout_nodes": 0,
-#         }
-#         self.env = {
-#             "project": "",
-#             "project_number": "",
-#         }
-
-
-# if __name__ == '__main__':
-#     instance_type = sys.argv[1]
-
-#     context = Context(instance_type)
-
-#     resources = sap_hana.GenerateConfig(context)['resources']
-
-#     diskSSD = next((sub for sub in resources if sub['name'] == '-pdssd'))
-#     diskHDD = next((sub for sub in resources if sub['name'] == '-backup'))
-#     print(diskSSD['properties']['sizeGb'])
-#     print(diskHDD['properties']['sizeGb'])
-
 import json
+import os 
 
-# url = "https://storage.googleapis.com/sapdeploy/dm-templates/sap_hana/sap_hana.py"
-# import urllib.request
-# import os 
-# dir_path = os.path.dirname(os.path.realpath(__file__))
-# a = urllib.request.urlopen(url)
-# f = open(os.path.join(dir_path,"sap_hana.py"), "wb") 
-# f.write(a.read())
-# f.close
+url = "https://storage.googleapis.com/sapdeploy/dm-templates/sap_hana/sap_hana.py"
+dir_path = os.path.dirname(os.path.realpath(__file__))
+major_version = sys.version_info.major
+if major_version == 2:
+    import urllib2
+    a = urllib2.urlopen(url)  
+elif major_version == 3:
+    import urllib.request
+    a = urllib.request.urlopen(url)    
+
+f = open(os.path.join(dir_path,"sap_hana.py"), "wb") 
+f.write(a.read())
+f.close
+
 import sap_hana
 
 class Context:
