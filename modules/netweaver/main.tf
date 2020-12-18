@@ -37,7 +37,6 @@ resource "google_compute_disk" "gcp_nw_boot" {
   zone    = var.zone
   size    = var.boot_disk_size
   image   = data.google_compute_image.instance_image.self_link
-  labels  = var.labels
 
   # Add the disk_encryption_key block only if a pd_kms_key was provided
   dynamic "disk_encryption_key" {
