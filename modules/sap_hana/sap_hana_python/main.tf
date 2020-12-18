@@ -29,7 +29,7 @@ data "external" "sap_hana_disks" {
 
   query = {
     instance_type = var.instance-type
-    dummy = local_file.sap-hana-py.filename
+    # dummy = local_file.sap-hana-py.filename
   }
 
   # depends_on = [local_file.sap-hana-py]
