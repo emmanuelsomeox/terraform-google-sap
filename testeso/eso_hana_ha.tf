@@ -28,7 +28,7 @@ module "gcp_sap_hana_ha" {
   sap_hana_sidadm_uid        = 1202
   sap_hana_sapsys_gid        = 241
   sap_vip                    = "10.10.30.165"
-  # sap_vip_secondary_range    = var.sap_vip_secondary_range
+  sap_vip_secondary_range    = ""
   public_ip                  = "false"
   primary_instance_ip        = ""
   secondary_instance_ip      = ""
